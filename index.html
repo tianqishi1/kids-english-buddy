@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>英语小伴 · Kids English Buddy</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦊</text></svg>">
+</head>
+<body>
+<div id="app">
+
+  <!-- 引导页（家长操作） -->
+  <section class="screen" id="screen-onboarding">
+    <div class="onboard-hero">🦊</div>
+    <h1>英语小伴</h1>
+    <p class="subtitle">每天 15 分钟，让孩子开口说英语</p>
+    <div class="card">
+      <label class="field">孩子的昵称
+        <input id="onboard-name" maxlength="12" placeholder="例如：小明">
+      </label>
+      <div class="field">年龄段</div>
+      <div class="band-row">
+        <button class="band-card" data-band="3-6"><b>3–6 岁</b><span>启蒙</span></button>
+        <button class="band-card selected" data-band="6-9"><b>6–9 岁</b><span>基础</span></button>
+        <button class="band-card" data-band="9-12"><b>9–12 岁</b><span>提升</span></button>
+      </div>
+      <label class="field">每日时长上限
+        <select id="onboard-limit">
+          <option value="10">10 分钟</option>
+          <option value="15" selected>15 分钟</option>
+          <option value="20">20 分钟</option>
+          <option value="30">30 分钟</option>
+        </select>
+      </label>
+      <div id="onboard-err" class="err"></div>
+      <button class="btn btn-primary btn-big" id="btn-onboard">开始英语冒险 🚀</button>
+      <p class="muted small center">家长须知：本产品为封闭课程域学习工具，无开放式 AI 聊天、无广告；学习数据仅保存在本机。</p>
+    </div>
+  </section>
+
+  <!-- 首页 -->
+  <section class="screen" id="screen-home">
+    <header class="home-head">
+      <div>
+        <div id="home-greet" class="greet"></div>
+        <div id="home-streak" class="streak"></div>
+      </div>
+      <button class="btn btn-ghost btn-small" data-parent>👨‍👩‍👧 家长中心</button>
+    </header>
+    <div class="pet-zone">
+      <div id="home-pet" class="pet-big bounce"></div>
+      <div id="home-pet-name" class="pet-name"></div>
+      <div class="xpbar"><div id="home-xpbar"></div></div>
+      <div id="home-xptext" class="xptext"></div>
+    </div>
+    <div id="stt-banner" class="banner">⚠️ 当前浏览器不支持语音识别，将使用「跟读练习模式」。建议在电脑 Chrome / Edge 打开以获得语音评测。</div>
+    <div class="home-actions">
+      <button class="btn btn-review" id="btn-review" style="display:none">📚 今日复习 <span class="badge" id="review-badge">0</span></button>
+    </div>
+    <h3 class="section-title">今日闯关</h3>
+    <div id="lesson-grid" class="lesson-grid"></div>
+    <p class="muted small center">v0.1 本地版 · 课程持续更新中</p>
+  </section>
+
+  <!-- 课程闯关 -->
+  <section class="screen" id="screen-lesson">
+    <header class="lesson-head">
+      <button class="btn btn-ghost btn-small" id="btn-exit-lesson">✕ 退出</button>
+      <div id="lesson-title" class="lesson-head-title"></div>
+      <div id="lesson-progress" class="muted small"></div>
+    </header>
+    <div class="progress"><div id="lesson-bar"></div></div>
+    <div id="lesson-body"></div>
+  </section>
+
+  <!-- 结果页 -->
+  <section class="screen" id="screen-result">
+    <div id="result-body"></div>
+  </section>
+
+  <!-- 复习 -->
+  <section class="screen" id="screen-review">
+    <header class="lesson-head">
+      <button class="btn btn-ghost btn-small" id="btn-exit-review">✕ 退出</button>
+      <div class="lesson-head-title">📚 生词复习</div>
+      <div id="review-progress" class="muted small"></div>
+    </header>
+    <div id="review-body"></div>
+  </section>
+
+  <!-- 家长中心 -->
+  <section class="screen" id="screen-parent">
+    <header class="lesson-head">
+      <button class="btn btn-ghost btn-small" id="btn-parent-back">← 返回</button>
+      <div class="lesson-head-title">👨‍👩‍👧 家长中心</div>
+      <div></div>
+    </header>
+    <div id="parent-body"></div>
+  </section>
+
+  <!-- 家长门弹窗 -->
+  <div class="modal" id="modal-gate">
+    <div class="modal-card">
+      <h3>🔒 家长验证</h3>
+      <p class="muted">请家长回答下面的算术题（防止孩子误入设置）</p>
+      <div id="gate-q" class="gate-q"></div>
+      <input id="gate-answer" type="number" inputmode="numeric" placeholder="输入答案">
+      <div id="gate-err" class="err"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="gate-cancel">取消</button>
+        <button class="btn btn-primary" id="gate-ok">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 每日时长锁弹窗 -->
+  <div class="modal" id="modal-lock">
+    <div class="modal-card">
+      <div class="lock-emoji">🌙</div>
+      <h3>今天练够啦！</h3>
+      <p class="muted">保护小嗓子和小眼睛，明天再来和 Pip 玩吧～</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="lock-cancel">好的</button>
+        <button class="btn btn-ghost" id="lock-parent">家长临时解锁</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分享卡弹窗 -->
+  <div class="modal" id="modal-share">
+    <div class="modal-card share-card">
+      <h3>🖼️ 晒娃分享卡</h3>
+      <img id="share-img" alt="分享卡">
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="share-close">关闭</button>
+        <a class="btn btn-primary" id="share-download">⬇️ 保存图片</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="js/lessons.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/store.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
