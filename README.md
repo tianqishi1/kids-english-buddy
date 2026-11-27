@@ -6,7 +6,7 @@
 ## 快速开始
 
 ```powershell
-cd D:\codex\kids-english-buddy
+cd kids-english-buddy
 python -m http.server 8321 --bind 127.0.0.1
 ```
 
